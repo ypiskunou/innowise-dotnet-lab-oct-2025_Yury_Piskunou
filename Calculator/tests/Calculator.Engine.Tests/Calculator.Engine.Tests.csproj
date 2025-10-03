@@ -21,4 +21,9 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Calculator.Core\Calculator.Core.csproj" />
+      <ProjectReference Include="..\..\src\Calculator.Engine\Calculator.Engine.csproj" />
+    </ItemGroup>
+
 </Project>
