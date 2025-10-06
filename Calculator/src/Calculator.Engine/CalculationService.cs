@@ -17,6 +17,42 @@ public class CalculationService : ICalculationService
         return result;
     }
 
+    private List<Token> Tokenize(string expression)
+    {
+        var tokens = new List<Token>();
+        for (int i = 0; i < expression.Length; i++)
+        {
+            char c = expression[i];
+
+            if (char.IsWhiteSpace(c))
+            {
+                continue;
+            }
+
+            Token? lastToken = tokens.LastOrDefault();
+            Token? newToken = null;
+
+            if (IsStartOfNumber(c, i, expression, lastToken))
+            {
+                newToken = ReadNumberToken(expression, ref i);
+            }
+            else if ("+-*/()".Contains(c))
+            {
+                newToken = ReadOperatorOrParenthesisToken(c);
+            }
+
+            if (newToken != null)
+            {
+                tokens.Add(newToken);
+            }
+            else
+            {
+                throw new ArgumentException($"Недопустимый символ в выражении: '{c}'");
+            }
+        }
+        return tokens;
+    }
+    
     private void ValidateTokens(List<Token> tokens)
     {
         for (int i = 0; i < tokens.Count; i++)
@@ -41,75 +77,57 @@ public class CalculationService : ICalculationService
             }
         }
     }
-
-    private List<Token> Tokenize(string expression)
+    
+    private bool IsStartOfNumber(char c, int index, string expression, Token? lastToken)
     {
-        var tokens = new List<Token>();
-        Token? lastToken = null;
-
-        for (int i = 0; i < expression.Length; i++)
+        if (char.IsDigit(c) || c == '.')
         {
-            char c = expression[i];
-
-            if (char.IsWhiteSpace(c))
-                continue;
-
-            if (char.IsDigit(c) || (c == '.' && i + 1 < expression.Length && char.IsDigit(expression[i + 1])))
-            {
-                string numberStr = c.ToString();
-                while (i + 1 < expression.Length && (char.IsDigit(expression[i + 1]) || expression[i + 1] == '.'))
-                {
-                    numberStr += expression[i + 1];
-                    i++;
-                }
-                var token = new Token(TokenType.Number, numberStr, double.Parse(numberStr, CultureInfo.InvariantCulture));
-                tokens.Add(token);
-                lastToken = token;
-            }
-            else if (c == '-')
-            {
-                bool isUnary = lastToken is null ||
-                               lastToken is { Type: TokenType.Operator } ||
-                               lastToken is { Type: TokenType.LeftParenthesis };
-
-                if (isUnary)
-                {
-                    i++;
-                    string numberStr = "-";
-                    while (i < expression.Length && (char.IsDigit(expression[i]) || expression[i] == '.'))
-                    {
-                        numberStr += expression[i];
-                        i++;
-                    }
-                    i--;
-
-                    var token = new Token(TokenType.Number, numberStr, double.Parse(numberStr, CultureInfo.InvariantCulture));
-                    tokens.Add(token);
-                    lastToken = token;
-                }
-                else
-                {
-                    var token = new Token(TokenType.Operator, c.ToString());
-                    tokens.Add(token);
-                    lastToken = token;
-                }
-            }
-            else if ("+*/()".Contains(c))
-            {
-                Token token;
-                if (c == '(') token = new Token(TokenType.LeftParenthesis, c.ToString());
-                else if (c == ')') token = new Token(TokenType.RightParenthesis, c.ToString());
-                else token = new Token(TokenType.Operator, c.ToString());
-
-                tokens.Add(token);
-                lastToken = token;
-            }
-            else
-            {
-                throw new ArgumentException($"Недопустимый символ в выражении: '{c}'");
-            }
+            return true;
         }
-        return tokens;
+        
+        if (c == '-')
+        {
+            bool isUnary = lastToken is null ||
+                           lastToken is { Type: TokenType.Operator } ||
+                           lastToken is { Type: TokenType.LeftParenthesis };
+            return isUnary;
+        }
+        return false;
+    }
+    
+    private Token ReadNumberToken(string expression, ref int index)
+    {
+        string numberStr = "";
+        
+        if(expression[index] == '-')
+        {
+            numberStr += "-";
+            index++;
+        }
+
+        while (index < expression.Length && (char.IsDigit(expression[index]) || expression[index] == '.'))
+        {
+            numberStr += expression[index];
+            index++;
+        }
+        index--;
+
+        if(!double.TryParse(numberStr, NumberStyles.Any, CultureInfo.InvariantCulture, out double value))
+        {
+             throw new ArgumentException($"Некорректный формат числа: '{numberStr}'");
+        }
+        
+        return new Token(TokenType.Number, numberStr, value);
+    }
+    
+    private Token ReadOperatorOrParenthesisToken(char c)
+    {
+        return c switch
+        {
+            '(' => new Token(TokenType.LeftParenthesis, c.ToString()),
+            ')' => new Token(TokenType.RightParenthesis, c.ToString()),
+            _ => new Token(TokenType.Operator, c.ToString()),
+        };
     }
 
     private List<Token> ConvertToPostfix(List<Token> infixTokens)
