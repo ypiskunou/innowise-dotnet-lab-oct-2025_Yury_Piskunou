@@ -17,4 +17,33 @@ public class CalculatorEngineTests
         
         Assert.Equal(14, session.CurrentValue);
     }
+    
+    // В CalculatorEngineTests.cs
+
+    [Fact]
+    public void UndoLast_Should_RevertToPreviousValue_AfterOneOperation()
+    {
+        ICalculationService calculationService = new CalculationService();
+        ICalculatorSession session = new CalculatorEngine(calculationService);
+
+        session.ExecuteExpression("10+5");
+        var valueAfterFirstExecution = session.CurrentValue;
+        
+        session.UndoLast();
+        
+        Assert.Equal(15, valueAfterFirstExecution);
+        Assert.Equal(0, session.CurrentValue); 
+    }
+
+    [Fact]
+    public void UndoLast_Should_DoNothing_WhenHistoryIsEmpty()
+    {
+        ICalculationService calculationService = new CalculationService();
+        ICalculatorSession session = new CalculatorEngine(calculationService);
+
+        var exception = Record.Exception(() => session.UndoLast());
+        
+        Assert.Null(exception); 
+        Assert.Equal(0, session.CurrentValue);
+    }
 }
