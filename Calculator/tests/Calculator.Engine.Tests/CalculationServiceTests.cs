@@ -68,10 +68,40 @@ public class CalculationServiceTests
     [InlineData("(2+3)*4", 20)]
     [InlineData("10-(2+3)", 5)] 
     [InlineData("2*(3+4*5)", 46)] 
+    [InlineData("2*(-4)", -8)] 
     public void Evaluate_Should_CorrectlyHandleParentheses(string expression, double expected)
     {
         var result = _service.Evaluate(expression);
         
         Assert.Equal(expected, result);
+    }
+    
+    [Theory]
+    [InlineData("4*-4", -16)]
+    [InlineData("10--1", 11)]
+    [InlineData("-10/-2", 5)]
+    [InlineData("-10+-2", -12)]
+    public void Evaluate_Should_CorrectlyHandleBareMinus(string expression, double expected)
+    {
+        var result = _service.Evaluate(expression);
+        
+        Assert.Equal(expected, result);
+    }
+    
+    [Theory]
+    [InlineData("2++3")]
+    [InlineData("5 * / 2")]
+    [InlineData("abc")]
+    [InlineData("(2+3")]
+    [InlineData("2+3)")]
+    public void Evaluate_Should_ThrowArgumentException_ForInvalidExpressions(string invalidExpression)
+    {
+        Assert.Throws<ArgumentException>(() => _service.Evaluate(invalidExpression));
+    }
+
+    [Fact]
+    public void Evaluate_Should_ThrowDivideByZeroException_ForDivisionByZero()
+    {
+        Assert.Throws<DivideByZeroException>(() => _service.Evaluate("5/0"));
     }
 }
