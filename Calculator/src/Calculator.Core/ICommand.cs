@@ -2,6 +2,6 @@ namespace Calculator.Core;
 
 public interface ICommand
 {
-    void Execute();
-    void UnExecute();
+    double Execute();
+    double UnExecute();
 }
