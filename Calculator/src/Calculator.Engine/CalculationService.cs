@@ -11,9 +11,35 @@ public class CalculationService : ICalculationService
     public double Evaluate(string expression)
     {
         var infixTokens = Tokenize(expression);
+        ValidateTokens(infixTokens);
         var postfixTokens = ConvertToPostfix(infixTokens);
         var result = EvaluatePostfix(postfixTokens);
         return result;
+    }
+
+    private void ValidateTokens(List<Token> tokens)
+    {
+        for (int i = 0; i < tokens.Count; i++)
+        {
+            var current = tokens[i];
+            var prev = i > 0 ? tokens[i - 1] : null;
+
+            if (current.Type == TokenType.Operator)
+            {
+                if (prev is null || prev.Type == TokenType.LeftParenthesis || prev.Type == TokenType.Operator)
+                {
+                    throw new ArgumentException($"Недопустимое использование оператора '{current.Lexeme}' после '{prev?.Lexeme}'.");
+                }
+            }
+            
+            if (current.Type == TokenType.Number)
+            {
+                if (prev is { Type: TokenType.RightParenthesis })
+                {
+                    throw new ArgumentException($"Неожиданное число '{current.Lexeme}' после закрывающей скобки.");
+                }
+            }
+        }
     }
 
     private List<Token> Tokenize(string expression)
@@ -48,7 +74,7 @@ public class CalculationService : ICalculationService
 
                 if (isUnary)
                 {
-                    i++; 
+                    i++;
                     string numberStr = "-";
                     while (i < expression.Length && (char.IsDigit(expression[i]) || expression[i] == '.'))
                     {
@@ -157,7 +183,7 @@ public class CalculationService : ICalculationService
             }
             else if (token.Type == TokenType.Operator)
             {
-                if (stack.Count < 2) throw new InvalidOperationException("Неверный синтаксис выражения (недостаточно операндов).");
+                if (stack.Count < 2) throw new ArgumentException("Неверный синтаксис выражения (недостаточно операндов).");
 
                 var right = stack.Pop();
                 var left = stack.Pop();
@@ -177,7 +203,7 @@ public class CalculationService : ICalculationService
             }
         }
 
-        if (stack.Count != 1) throw new InvalidOperationException("Неверный синтаксис выражения (в стеке осталось больше одного значения).");
+        if (stack.Count != 1) throw new ArgumentException("Неверный синтаксис выражения (в стеке осталось больше одного значения).");
 
         return stack.Pop();
     }
