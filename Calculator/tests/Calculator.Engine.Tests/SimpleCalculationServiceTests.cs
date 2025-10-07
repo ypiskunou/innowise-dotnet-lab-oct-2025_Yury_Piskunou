@@ -7,7 +7,7 @@ using Engine;
 
 public class SimpleCalculationServiceTests
 {
-    private readonly ICalculationService _service = new SimpleCalculationService();
+    private readonly ICalculationService _service = new SimpleCalculationServiceWithRegex();
 
     [Theory]
     [InlineData("5+10", 15)]

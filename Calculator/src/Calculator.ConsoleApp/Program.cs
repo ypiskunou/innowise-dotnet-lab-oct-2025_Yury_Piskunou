@@ -7,7 +7,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        ICalculationService calculationService = new SimpleCalculationService();
+        ICalculationService calculationService = new CalculationServiceWithRegex();
         
         ICalculatorSession session = new CalculatorEngine(calculationService);
         

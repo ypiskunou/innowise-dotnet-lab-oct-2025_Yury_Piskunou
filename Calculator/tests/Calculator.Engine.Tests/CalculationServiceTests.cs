@@ -1,8 +1,8 @@
 namespace Calculator.Engine.Tests;
 
 using Xunit;
-using Calculator.Core;
-using Calculator.Engine;
+using Core;
+using Engine;
 
 public class CalculationServiceTests
 {
@@ -10,7 +10,7 @@ public class CalculationServiceTests
 
     public CalculationServiceTests()
     {
-        _service = new CalculationService();
+        _service = new CalculationServiceWithRegex();
     }
     
     [Fact]

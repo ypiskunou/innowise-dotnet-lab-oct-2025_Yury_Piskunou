@@ -1,49 +1,63 @@
 namespace Calculator.Engine.Tests;
 
 using Xunit;
-using Calculator.Core;
-using Calculator.Engine;
+using Core;
+using Engine;
 
 public class CalculatorEngineTests
 {
+    private readonly ICalculatorSession _session;
+    
+    public CalculatorEngineTests()
+    {
+        ICalculationService calculationService = new CalculationService();
+        _session = new CalculatorEngine(calculationService);
+    }
+
     [Fact]
     public void ExecuteExpression_Should_UpdateCurrentValue_WithCalculationResult()
     {
-        ICalculationService calculationService = new CalculationService();
-        ICalculatorSession session = new CalculatorEngine(calculationService);
-        var expression = "2+3*4"; 
+        var expression = "2+3*4";
         
-        session.ExecuteExpression(expression);
-        
-        Assert.Equal(14, session.CurrentValue);
+        _session.ExecuteExpression(expression);
+
+        Assert.Equal(14, _session.CurrentValue);
     }
-    
-    // В CalculatorEngineTests.cs
 
     [Fact]
     public void UndoLast_Should_RevertToPreviousValue_AfterOneOperation()
     {
-        ICalculationService calculationService = new CalculationService();
-        ICalculatorSession session = new CalculatorEngine(calculationService);
-
-        session.ExecuteExpression("10+5");
-        var valueAfterFirstExecution = session.CurrentValue;
+        _session.ExecuteExpression("10+5");
+        var valueAfterFirstExecution = _session.CurrentValue;
         
-        session.UndoLast();
+        _session.UndoLast();
         
         Assert.Equal(15, valueAfterFirstExecution);
-        Assert.Equal(0, session.CurrentValue); 
+        Assert.Equal(0, _session.CurrentValue);
     }
 
     [Fact]
     public void UndoLast_Should_DoNothing_WhenHistoryIsEmpty()
     {
-        ICalculationService calculationService = new CalculationService();
-        ICalculatorSession session = new CalculatorEngine(calculationService);
-
-        var exception = Record.Exception(() => session.UndoLast());
+        var exception = Record.Exception(() => _session.UndoLast());
         
-        Assert.Null(exception); 
-        Assert.Equal(0, session.CurrentValue);
+        Assert.Null(exception);
+        Assert.Equal(0, _session.CurrentValue);
+    }
+    
+    [Fact]
+    public void UndoLast_Should_RevertSequentially_AfterMultipleOperations()
+    {
+        _session.ExecuteExpression("10+5");
+        _session.ExecuteExpression("3*3");
+        
+        _session.UndoLast();
+        var valueAfterFirstUndo = _session.CurrentValue;
+
+        _session.UndoLast();
+        var valueAfterSecondUndo = _session.CurrentValue;
+        
+        Assert.Equal(15, valueAfterFirstUndo);
+        Assert.Equal(0, valueAfterSecondUndo);
     }
 }
