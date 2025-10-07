@@ -1,3 +1,6 @@
+using Calculator.Core.Strategies;
+using Calculator.Engine.Tokenization.Definitions;
+
 namespace Calculator.ConsoleApp;
 
 using Core;
@@ -7,13 +10,29 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        ICalculationService calculationService = new CalculationServiceWithRegex();
+        var tokenDefinitions = new List<ITokenDefinition>
+        {
+            new NumberDefinition(),
+            new OperatorDefinition(),
+            new LeftParenthesisDefinition(),
+            new RightParenthesisDefinition()
+        };
+
+        var strategies = new IOperationStrategy[]
+        {
+            new AdditionStrategy(),
+            new SubtractionStrategy(),
+            new MultiplicationStrategy(),
+            new DivisionStrategy()
+        };
         
-        ICalculatorSession session = new CalculatorEngine(calculationService);
+        var tokenizer = new RegexTokenizer(tokenDefinitions);
+        
+        var calculationService = new CalculationServiceWithRegex(tokenizer, strategies);
+        
+        var session = new CalculatorEngine(calculationService);
         
         IApplicationHost host = new ConsoleUI(session);
-        
-        
         host.Run();
     }
 }

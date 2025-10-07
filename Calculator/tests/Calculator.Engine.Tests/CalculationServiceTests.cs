@@ -1,3 +1,6 @@
+using Calculator.Core.Strategies;
+using Calculator.Engine.Tokenization.Definitions;
+
 namespace Calculator.Engine.Tests;
 
 using Xunit;
@@ -10,7 +13,25 @@ public class CalculationServiceTests
 
     public CalculationServiceTests()
     {
-        _service = new CalculationServiceWithRegex();
+        var tokenDefinitions = new List<ITokenDefinition>
+        {
+            new NumberDefinition(),
+            new OperatorDefinition(),
+            new LeftParenthesisDefinition(),
+            new RightParenthesisDefinition()
+        };
+        
+        var tokenizer = new RegexTokenizer(tokenDefinitions);
+        
+        var operationStrategies = new List<IOperationStrategy>
+        {
+            new AdditionStrategy(),
+            new SubtractionStrategy(),
+            new MultiplicationStrategy(),
+            new DivisionStrategy()
+        };
+        
+        _service = new CalculationServiceWithRegex(tokenizer, operationStrategies);
     }
     
     [Fact]
