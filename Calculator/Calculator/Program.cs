@@ -18,7 +18,7 @@ public class Program
 
         var calculator = new Calculator(operations);
         
-        var consoleUI = new ConsoleUI(calculator, validOperators);
+        var consoleUI = new ConsoleUI(calculator, validOperators, new SystemConsole());
         
         consoleUI.Start();
 
