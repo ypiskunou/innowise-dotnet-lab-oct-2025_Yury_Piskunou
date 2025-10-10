@@ -33,7 +33,7 @@ public class ConsoleUI
                                ?? throw new OperationCanceledException(
                                    "Ввод отменен пользователем. Программа завершает работу."
                                );
-                if (input.ToLower() == "n")
+                if (input.Trim().ToLower() == "n")
                 {
                     break;
                 }
