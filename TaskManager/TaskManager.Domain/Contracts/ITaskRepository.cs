@@ -8,5 +8,4 @@ public interface ITaskRepository
     Task<IEnumerable<TaskItem>> GetAllAsync();
     Task<bool> UpdateStatusAsync(int id, bool isCompleted);
     Task<bool> DeleteAsync(int id);
-    
 }

@@ -1,35 +1,38 @@
 ﻿using ConsoleApp;
-using Microsoft.Extensions.Configuration;
+using ConsoleApp.DatabaseRegistrars;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TaskManager.Application.Commands;
 using TaskManager.Application.Services;
-using TaskManager.Domain.Contracts;
-using TaskManager.Repository;
 
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
-        var dbType = context.Configuration["DatabaseType"] ?? "Postgres";
-        string connectionString;
+        var registrarTypes = typeof(Program).Assembly.GetTypes()
+            .Where(t => typeof(IDatabaseRegistrar).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract);
+        
+        var registrars = registrarTypes
+            .Select(t => Activator.CreateInstance(t) as IDatabaseRegistrar)
+            .Where(r => r is not null)
+            .ToDictionary(r => r!.DatabaseName, r => r, StringComparer.OrdinalIgnoreCase);
 
-        if (dbType.Equals("Postgres", StringComparison.OrdinalIgnoreCase))
+        var dbType = context.Configuration["DatabaseType"] ?? "Postgres";
+
+        if (registrars.TryGetValue(dbType, out var registrar))
         {
-            connectionString = context.Configuration.GetConnectionString("PostgreSqlConnection");
-            services.AddSingleton<IDbConnectionFactory>(sp => new PostgreSqlConnectionFactory(connectionString));
-            services.AddSingleton<ITaskRepository, PostgreSqlTaskRepository>();
-        }
-        else if (dbType.Equals("MsSql", StringComparison.OrdinalIgnoreCase))
-        {
-            connectionString = context.Configuration.GetConnectionString("MsSqlConnection");
-            services.AddSingleton<IDbConnectionFactory>(sp => new MsSqlConnectionFactory(connectionString));
-            services.AddSingleton<ITaskRepository, MsSqlTaskRepository>();
+            registrar!.Register(services, context.Configuration);
         }
         else
         {
-            throw new Exception($"Неподдерживаемый тип базы данных: {dbType}");
+            throw new Exception($"Не найден регистратор для типа базы данных: '{dbType}'.");
         }
-
+        
         services.AddTransient<TaskApplicationService>();
+        
+        services.AddTransient<IAsyncCommand, ShowAllTasksCommand>();
+        services.AddTransient<IAsyncCommand, AddTaskCommand>();
+        services.AddTransient<IAsyncCommand, CompleteTaskCommand>(); // Предполагаем, что вы их создали
+        services.AddTransient<IAsyncCommand, DeleteTaskCommand>();   // Предполагаем, что вы их создали
         
         services.AddHostedService<ConsoleWorker>();
     })
