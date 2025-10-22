@@ -69,29 +69,31 @@ public class TaskApplicationServiceTests
     #endregion
     
     #region DeleteTaskAsync Tests
-
+    
     [Fact]
-    public async Task DeleteTaskAsync_WhenRepositorySucceeds_ShouldReturnTrue()
+    public async Task DeleteTaskAsync_WhenTaskExists_ShouldReturnTrue()
     {
-        var taskId = 1;
+        var existingTaskId = 1;
+        _mockTaskRepository.Setup(repo => repo.DeleteAsync(existingTaskId)).ReturnsAsync(true);
         
-        _mockTaskRepository.Setup(repo => repo.DeleteAsync(taskId)).ReturnsAsync(true);
-        
-        var result = await _service.DeleteTaskAsync(taskId);
-        
+        var result = await _service.DeleteTaskAsync(existingTaskId);
+    
         result.Should().BeTrue();
+        
+        _mockTaskRepository.Verify(repo => repo.DeleteAsync(existingTaskId), Times.Once);
     }
     
     [Fact]
-    public async Task DeleteTaskAsync_WhenRepositoryFails_ShouldReturnFalse()
+    public async Task DeleteTaskAsync_WhenTaskDoesNotExist_ShouldReturnFalse()
     {
-        var taskId = 99; 
+        var nonExistentTaskId = 99;
+        _mockTaskRepository.Setup(repo => repo.DeleteAsync(nonExistentTaskId)).ReturnsAsync(false);
         
-        _mockTaskRepository.Setup(repo => repo.DeleteAsync(taskId)).ReturnsAsync(false);
-        
-        var result = await _service.DeleteTaskAsync(taskId);
+        var result = await _service.DeleteTaskAsync(nonExistentTaskId);
         
         result.Should().BeFalse();
+        
+        _mockTaskRepository.Verify(repo => repo.DeleteAsync(nonExistentTaskId), Times.Once);
     }
     
     #endregion
@@ -109,6 +111,17 @@ public class TaskApplicationServiceTests
         result.Should().BeTrue();
         
         _mockTaskRepository.Verify(repo => repo.UpdateStatusAsync(taskId, true), Times.Once);
+    }
+    
+    [Fact]
+    public async Task CompleteTaskAsync_WhenTaskDoesNotExist_ShouldReturnFalse()
+    {
+        var nonExistentTaskId = 99;
+        _mockTaskRepository.Setup(repo => repo.UpdateStatusAsync(nonExistentTaskId, true)).ReturnsAsync(false);
+        
+        var result = await _service.CompleteTaskAsync(nonExistentTaskId);
+        
+        result.Should().BeFalse();
     }
     
     #endregion

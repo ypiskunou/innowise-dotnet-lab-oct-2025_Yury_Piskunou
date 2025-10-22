@@ -20,7 +20,16 @@ public class DeleteTaskCommand : IAsyncCommand
         Console.Write("Введите ID задачи, которую хотите удалить: ");
         if (int.TryParse(Console.ReadLine()?.Trim(), out int id))
         {
-            await _taskService.DeleteTaskAsync(id);
+            bool success = await _taskService.DeleteTaskAsync(id);
+            
+            if (success)
+            {
+                Console.WriteLine($"Задача с ID {id} успешно удалена.");
+            }
+            else
+            {
+                Console.WriteLine($"Ошибка: Задача с ID {id} не найдена.");
+            }
         }
         else
         {

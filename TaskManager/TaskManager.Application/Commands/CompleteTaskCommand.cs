@@ -20,7 +20,16 @@ public class CompleteTaskCommand : IAsyncCommand
         Console.Write("Введите ID задачи, которую хотите завершить: ");
         if (int.TryParse(Console.ReadLine()?.Trim(), out int id))
         {
-            await _taskService.CompleteTaskAsync(id);
+            bool success = await _taskService.CompleteTaskAsync(id);
+            
+            if (success)
+            {
+                Console.WriteLine($"Задача с ID {id} успешно отмечена как выполненная.");
+            }
+            else
+            {
+                Console.WriteLine($"Ошибка: Задача с ID {id} не найдена.");
+            }
         }
         else
         {
