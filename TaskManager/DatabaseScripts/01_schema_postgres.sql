@@ -1,0 +1,7 @@
+CREATE TABLE "Tasks" (
+    "Id" SERIAL PRIMARY KEY,
+    "Title" VARCHAR(200) NOT NULL,
+    "Description" TEXT,
+    "IsCompleted" BOOLEAN NOT NULL DEFAULT false,
+    "CreatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
