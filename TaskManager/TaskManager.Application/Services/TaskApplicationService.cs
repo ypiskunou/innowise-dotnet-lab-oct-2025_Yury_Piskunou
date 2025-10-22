@@ -23,6 +23,13 @@ public class TaskApplicationService
         {
             throw new ArgumentException("Название задачи не может быть пустым.", nameof(title));
         }
+        
+        if (title.Length > TaskItem.MaxTitleLength)
+        {
+            throw new ArgumentException(
+                $"Название задачи не может быть длиннее {TaskItem.MaxTitleLength} символов.", nameof(title)
+            );
+        }
 
         var newTask = new TaskItem(0, title, description, false, DateTime.MinValue);
         await _taskRepository.AddAsync(newTask);

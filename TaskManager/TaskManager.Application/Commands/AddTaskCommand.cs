@@ -1,5 +1,6 @@
 using ConsoleApp.Constants;
 using TaskManager.Application.Services;
+using TaskManager.Domain.Entities;
 
 namespace TaskManager.Application.Commands;
 
@@ -19,16 +20,24 @@ public class AddTaskCommand : IAsyncCommand
     {
         Console.Write("Введите название задачи: ");
         var title = Console.ReadLine()?.Trim();
-        
+
         if (string.IsNullOrWhiteSpace(title))
         {
             Console.WriteLine("Ошибка: Название задачи не может быть пустым. Операция отменена.");
             return;
         }
 
+        if (title.Length > TaskItem.MaxTitleLength)
+        {
+            Console.WriteLine(
+                $"Ошибка: Название задачи не может быть длиннее {TaskItem.MaxTitleLength} символов. Операция отменена."
+            );
+            return;
+        }
+
         Console.Write("Введите описание (или оставьте пустым): ");
         var description = Console.ReadLine();
-        
+
         try
         {
             await _taskService.AddNewTaskAsync(title, description);
