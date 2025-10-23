@@ -31,8 +31,8 @@ var host = Host.CreateDefaultBuilder(args)
         
         services.AddTransient<IAsyncCommand, ShowAllTasksCommand>();
         services.AddTransient<IAsyncCommand, AddTaskCommand>();
-        services.AddTransient<IAsyncCommand, CompleteTaskCommand>(); // Предполагаем, что вы их создали
-        services.AddTransient<IAsyncCommand, DeleteTaskCommand>();   // Предполагаем, что вы их создали
+        services.AddTransient<IAsyncCommand, CompleteTaskCommand>();
+        services.AddTransient<IAsyncCommand, DeleteTaskCommand>();  
         
         services.AddHostedService<ConsoleWorker>();
     })
