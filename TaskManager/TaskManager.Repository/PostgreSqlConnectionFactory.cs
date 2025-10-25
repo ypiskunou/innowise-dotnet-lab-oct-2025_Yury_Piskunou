@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 using TaskManager.Domain.Contracts;
 
@@ -8,9 +9,9 @@ public class PostgreSqlConnectionFactory: IDbConnectionFactory
 {
     private readonly string _connectionString;
     
-    public PostgreSqlConnectionFactory(string connectionString)
+    public PostgreSqlConnectionFactory(IConfiguration config)
     {
-        _connectionString = connectionString;
+        _connectionString = config.GetConnectionString("PostgresConnection");
     }
 
     public IDbConnection CreateConnection()
