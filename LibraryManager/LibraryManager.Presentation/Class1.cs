@@ -1,5 +1,8 @@
 ﻿namespace LibraryManager.Presentation;
 
-public class Class1
+public class Author
 {
+    Guid Id {get; set;}
+    string Name {get; set;}
+    
 }
