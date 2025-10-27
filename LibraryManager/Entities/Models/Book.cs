@@ -2,8 +2,8 @@ namespace Entities;
 
 public class Book
 {
-    Guid Id {get; set;}
-    string Title {get; set;}
-    DateTime PublishedYear {get; set;}
-    Guid AuthorId {get; set;}
+    public Guid Id {get; set;}
+    public string Title {get; set;}
+    public int PublishedYear {get; set;}
+    public Guid AuthorId {get; set;}
 }
