@@ -1,9 +1,18 @@
-var builder = WebApplication.CreateBuilder(args);
+using LibraryManager.Contracts;
+using LibraryManager.Presentation;
+using Repository;
+using Service;
+using Service.Contracts;
 
-builder.Services.AddControllers();
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
+builder.Services.AddScoped<IServiceManager, ServiceManager>();
+builder.Services.AddControllers()
+    .AddApplicationPart(typeof(AssemblyReference).Assembly);
 
 var app = builder.Build();
 
