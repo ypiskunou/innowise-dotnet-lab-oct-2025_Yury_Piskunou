@@ -1,0 +1,44 @@
+[
+  {
+    "id": "4145bbe3-5e1e-4034-9d54-da63f56c02c3",
+    "title": "Fahrenheit 451",
+    "publishedYear": 1953,
+    "authorId": "3310f8f9-f4bd-4a88-81fc-d50fdc2bc7dd"
+  },
+  {
+    "id": "560a5138-59b7-43be-aac4-03056c4a27d8",
+    "title": "The Martian Chronicles",
+    "publishedYear": 1950,
+    "authorId": "3310f8f9-f4bd-4a88-81fc-d50fdc2bc7dd"
+  },
+  {
+    "id": "d6808a67-50c8-493f-b224-3ecc4cabab1b",
+    "title": "Dandelion Wine",
+    "publishedYear": 1957,
+    "authorId": "3310f8f9-f4bd-4a88-81fc-d50fdc2bc7dd"
+  },
+  {
+    "id": "dfc4017b-733e-49b3-b915-0572a729ffa0",
+    "title": "I, Robot",
+    "publishedYear": 1950,
+    "authorId": "d6b0b215-9108-493c-985c-1b541a2c92ef"
+  },
+  {
+    "id": "09820e43-229b-42c6-9f38-39f58bbefb58",
+    "title": "Foundation",
+    "publishedYear": 1951,
+    "authorId": "d6b0b215-9108-493c-985c-1b541a2c92ef"
+  },
+  {
+    "id": "4e4a2cf1-6bb3-462c-b8cd-208e9161cb9a",
+    "title": "The Colour of Magic",
+    "publishedYear": 1983,
+    "authorId": "f16c5009-1386-4be4-a4cc-8944fe7e92c1"
+  },
+  {
+    "id": "236187cc-6c1c-48e5-8fc4-6df2976f31ca",
+    "title": "Mort",
+    "publishedYear": 1987,
+    "authorId": "f16c5009-1386-4be4-a4cc-8944fe7e92c1"
+  }
+]
