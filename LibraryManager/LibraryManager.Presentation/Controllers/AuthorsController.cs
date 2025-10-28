@@ -1,3 +1,4 @@
+using LibraryManager.Presentation.ActionFfilters;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
@@ -30,6 +31,7 @@ public class AuthorsController: ControllerBase
     }
 
     [HttpPost]
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
     public IActionResult CreateAuthor([FromBody] AuthorForCreationDto author)
     {
         var createdAuthor = _service.AuthorService.AddAuthor(author);
@@ -37,6 +39,7 @@ public class AuthorsController: ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
     public IActionResult UpdateAuthor(Guid id, [FromBody] AuthorForUpdateDto author)
     {
         _service.AuthorService.UpdateAuthor(id, author);

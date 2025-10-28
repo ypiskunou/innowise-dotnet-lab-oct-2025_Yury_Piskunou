@@ -1,5 +1,6 @@
 using LibraryManager.Contracts;
 using LibraryManager.Presentation;
+using LibraryManager.Presentation.ActionFfilters;
 using Repository;
 using Service;
 using Service.Contracts;
@@ -13,6 +14,7 @@ builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 builder.Services.AddScoped<IServiceManager, ServiceManager>();
 builder.Services.AddControllers()
     .AddApplicationPart(typeof(AssemblyReference).Assembly);
+builder.Services.AddScoped<ValidationFilterAttribute>();
 
 var app = builder.Build();
 
