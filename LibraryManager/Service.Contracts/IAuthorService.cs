@@ -4,9 +4,9 @@ namespace Service.Contracts;
 
 public interface IAuthorService
 {
-    IEnumerable<AuthorDto> GetAllAuthors();
-    AuthorDto GetAuthorById(Guid id);
-    AuthorDto AddAuthor(AuthorForCreationDto author);
-    void UpdateAuthor(Guid id, AuthorForUpdateDto author);
-    void DeleteAuthor(Guid id);
+    Task<IEnumerable<AuthorDto>> GetAllAuthorsAsync(bool trackChanges);
+    Task<AuthorDto> GetAuthorByIdAsync(Guid id, bool trackChanges);
+    Task<AuthorDto> AddAuthorAsync(AuthorForCreationDto author);
+    Task UpdateAuthorAsync(Guid id, AuthorForUpdateDto author, bool trackChanges);
+    Task DeleteAuthorAsync(Guid id, bool trackChanges);
 }

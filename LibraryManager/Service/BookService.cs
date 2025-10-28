@@ -1,3 +1,4 @@
+using AutoMapper;
 using Entities;
 using Entities.Exceptions;
 using LibraryManager.Contracts;
@@ -6,64 +7,61 @@ using Shared.DataTransferObjects;
 
 namespace Service;
 
-public class BookService: IBookService
+public sealed class BookService: IBookService
 {
-    private IRepositoryManager _repository;
+    private readonly IRepositoryManager _repository;
+    private readonly IMapper _mapper;
 
-    public BookService(IRepositoryManager repository)
+    public BookService(IRepositoryManager repository, IMapper mapper)
     {
         _repository = repository;
+        _mapper = mapper;
     }
     
-    public IEnumerable<BookDto> GetAllBooks()
+    public async Task<IEnumerable<BookDto>> GetAllBooksAsync(bool trackChanges)
     {
-        var books = _repository.Book.GetAllBooks();
-        return books.Where(b => b is not null)
-            .Select(b => new BookDto(b!.Id, b.Title, b.PublishedYear, b.AuthorId));
+        var books = await _repository.Book.GetAllBooksAsync(trackChanges);
+        var booksDto = _mapper.Map<IEnumerable<BookDto>>(books);
+        
+        return booksDto;
     }
 
-    public BookDto GetBookById(Guid id)
+    public async Task<BookDto> GetBookByIdAsync(Guid id, bool trackChanges)
     {
-        var book = _repository.Book.GetBookById(id);
-        if (book is null)
-            throw new BookNotFoundException(id);
+        var book = await GetBookAndCheckIfExistsAsync(id, trackChanges);
         
-        return new BookDto(book!.Id, book.Title, book.PublishedYear, book.AuthorId);
+        return _mapper.Map<BookDto>(book);
     }
 
-    public BookDto AddBook(BookForCreationDto book)
+    public async Task<BookDto> AddBookAsync(BookForCreationDto book)
     {
-        var bookEntity = new Book
-        {
-            Title = book.Title,
-            PublishedYear = book.PublishedYear,
-            AuthorId = book.AuthorId
-        };
-        
+        var bookEntity = _mapper.Map<Book>(book);
         _repository.Book.CreateBook(bookEntity);
-        var bookDto = new BookDto(bookEntity.Id, bookEntity.Title, bookEntity.PublishedYear, bookEntity.AuthorId);
+        await _repository.SaveAsync();
         
-        return bookDto;
+        return _mapper.Map<BookDto>(bookEntity);
     }
 
-    public void UpdateBook(Guid id, BookForUpdateDto book)
+    public async Task UpdateBookAsync(Guid id, BookForUpdateDto book, bool trackChanges)
     {
-        var bookEntity = _repository.Book.GetBookById(id);
-        
-        if(bookEntity is null) 
-            throw new BookNotFoundException(id);
-        
-        bookEntity.Title = book.Title;
-        bookEntity.PublishedYear = book.PublishedYear;
-        bookEntity.AuthorId = book.AuthorId;
+        var bookEntity = await GetBookAndCheckIfExistsAsync(id, trackChanges);
+        _mapper.Map(book, bookEntity);
+        await _repository.SaveAsync();
     }
 
-    public void DeleteBook(Guid id)
+    public async Task DeleteBookAsync(Guid id, bool trackChanges)
     {
-        var book = _repository.Book.GetBookById(id);
+        var bookEntity = await GetBookAndCheckIfExistsAsync(id, trackChanges);
+        _repository.Book.DeleteBook(bookEntity);
+        await _repository.SaveAsync();
+    }
+
+    private async Task<Book> GetBookAndCheckIfExistsAsync(Guid id, bool trackChanges)
+    {
+        var book = await _repository.Book.GetBookByIdAsync(id, trackChanges);
         if(book is null)
             throw new BookNotFoundException(id);
         
-        _repository.Book.DeleteBook(book);
+        return book;
     }
 }

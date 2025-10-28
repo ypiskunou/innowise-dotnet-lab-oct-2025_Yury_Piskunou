@@ -1,4 +1,5 @@
-﻿using Entities;
+﻿using AutoMapper;
+using Entities;
 using Entities.Exceptions;
 using LibraryManager.Contracts;
 using Service.Contracts;
@@ -6,60 +7,64 @@ using Shared.DataTransferObjects;
 
 namespace Service;
 
-public class AuthorService: IAuthorService
+public sealed class AuthorService: IAuthorService
 {
-    private IRepositoryManager _repository;
-
-    public AuthorService(IRepositoryManager repository)
+    private readonly IRepositoryManager _repository;
+    private readonly IMapper _mapper;
+    
+    public AuthorService(IRepositoryManager repository, IMapper mapper)
     {
         _repository = repository;
+        _mapper = mapper;
     }
-    public IEnumerable<AuthorDto> GetAllAuthors()
+    
+    public async Task<IEnumerable<AuthorDto>> GetAllAuthorsAsync(bool trackChanges)
     {
-        var authors = _repository.Author.GetAllAuthors();
-
-        return authors.Where(a => a!=null)
-            .Select(a => new AuthorDto(a!.Id, a.Name, a.DateOfBirth));
-    }
-
-    public AuthorDto GetAuthorById(Guid id)
-    {
-        var author = _repository.Author.GetAuthorById(id);
-        if (author == null)
-            throw new AuthorNotFoundException(id);
-        return new AuthorDto(author.Id, author.Name, author.DateOfBirth);
-    }
-
-    public AuthorDto AddAuthor(AuthorForCreationDto author)
-    {
-        var authorEntity = new Author
-        {
-            Name = author.Name, 
-            DateOfBirth = author.DateOfBirth
-        };
+        var authors = await _repository.Author.GetAllAuthorsAsync(trackChanges);
+        var authorsDto = _mapper.Map<IEnumerable<AuthorDto>>(authors);
         
-        _repository.Author.CreateAuthor(authorEntity);
+        return authorsDto;
+    }
+
+    public async Task<AuthorDto> GetAuthorByIdAsync(Guid id, bool trackChanges)
+    {
+        var author = await GetAuthorAndCheckIfItExists(id, trackChanges);
+        var authorDto = _mapper.Map<AuthorDto>(author);
         
-        var authorDto = new AuthorDto(authorEntity.Id, authorEntity.Name, authorEntity.DateOfBirth);
         return authorDto;
     }
 
-    public void UpdateAuthor(Guid id, AuthorForUpdateDto author)
+    public async Task<AuthorDto> AddAuthorAsync(AuthorForCreationDto author)
     {
-        var authorEntity = _repository.Author.GetAuthorById(id);
-        if (authorEntity == null)
-            throw new AuthorNotFoundException(id);
+        var authorEntity = _mapper.Map<Author>(author);
+        _repository.Author.CreateAuthor(authorEntity);
+        await _repository.SaveAsync();
         
-        authorEntity.Name = author.Name;
-        authorEntity.DateOfBirth = author.DateOfBirth;
+        var authorDto = _mapper.Map<AuthorDto>(authorEntity);
+        
+        return authorDto;
     }
 
-    public void DeleteAuthor(Guid id)
+    public async Task UpdateAuthorAsync(Guid id, AuthorForUpdateDto author, bool trackChanges)
     {
-        var author = _repository.Author.GetAuthorById(id);
-        if(author == null) 
+        var authorEntity = await GetAuthorAndCheckIfItExists(id, trackChanges);
+        _mapper.Map(author, authorEntity);
+        await _repository.SaveAsync();
+    }
+
+    public async Task DeleteAuthorAsync(Guid id, bool trackChanges)
+    {
+        var author = await GetAuthorAndCheckIfItExists(id, trackChanges);
+        _repository.Author.DeleteAuthor(author);
+        await _repository.SaveAsync();
+    }
+    
+    private async Task<Author> GetAuthorAndCheckIfItExists(Guid id, bool trackChanges) 
+    { 
+        var author = await _repository.Author.GetAuthorByIdAsync(id, trackChanges); 
+        if (author is null) 
             throw new AuthorNotFoundException(id);
         
-        _repository.Author.DeleteAuthor(author);
+        return author; 
     }
 }

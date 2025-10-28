@@ -17,39 +17,39 @@ public class AuthorsController: ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAuthors()
+    public async Task<IActionResult> GetAuthors()
     {
-        var authors = _service.AuthorService.GetAllAuthors();
+        var authors = await _service.AuthorService.GetAllAuthorsAsync(false);
         return Ok(authors);
     }
 
     [HttpGet("{id:guid}", Name = "GetAuthorById")]
-    public IActionResult GetAuthor(Guid id)
+    public async Task<IActionResult> GetAuthor(Guid id)
     {
-        var author = _service.AuthorService.GetAuthorById(id);
+        var author = await _service.AuthorService.GetAuthorByIdAsync(id, false);
         return Ok(author);
     }
 
     [HttpPost]
     [ServiceFilter(typeof(ValidationFilterAttribute))]
-    public IActionResult CreateAuthor([FromBody] AuthorForCreationDto author)
+    public async Task<IActionResult> CreateAuthor([FromBody] AuthorForCreationDto author)
     {
-        var createdAuthor = _service.AuthorService.AddAuthor(author);
+        var createdAuthor = await _service.AuthorService.AddAuthorAsync(author);
         return CreatedAtRoute("GetAuthorById", new {id = createdAuthor.Id}, createdAuthor);
     }
 
     [HttpPut("{id:guid}")]
     [ServiceFilter(typeof(ValidationFilterAttribute))]
-    public IActionResult UpdateAuthor(Guid id, [FromBody] AuthorForUpdateDto author)
+    public async Task<IActionResult> UpdateAuthor(Guid id, [FromBody] AuthorForUpdateDto author)
     {
-        _service.AuthorService.UpdateAuthor(id, author);
+        await _service.AuthorService.UpdateAuthorAsync(id, author, true);
         return NoContent();
     }
 
     [HttpDelete("{id:guid}")]
-    public IActionResult DeleteAuthor(Guid id)
+    public async Task<IActionResult> DeleteAuthor(Guid id)
     {
-        _service.AuthorService.DeleteAuthor(id);
+        await _service.AuthorService.DeleteAuthorAsync(id, false);
         return NoContent();
     }
 }

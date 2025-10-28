@@ -4,8 +4,8 @@ namespace LibraryManager.Contracts;
 
 public interface IAuthorRepository
 {
-    IEnumerable<Author?> GetAllAuthors();
-    Author? GetAuthorById(Guid id);
+    Task<IEnumerable<Author?>> GetAllAuthorsAsync(bool trackChanges);
+    Task<Author?> GetAuthorByIdAsync(Guid id, bool trackChanges);
     void CreateAuthor(Author author);
     void DeleteAuthor(Author author);
 }

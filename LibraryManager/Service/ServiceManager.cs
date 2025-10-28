@@ -1,3 +1,4 @@
+using AutoMapper;
 using LibraryManager.Contracts;
 using Service.Contracts;
 
@@ -8,10 +9,10 @@ public sealed class ServiceManager: IServiceManager
     private Lazy<IAuthorService> _authorService;
     private Lazy<IBookService> _bookService;
 
-    public ServiceManager(IRepositoryManager repositoryManager)
+    public ServiceManager(IRepositoryManager repositoryManager, IMapper mapper)
     {
-        _authorService = new Lazy<IAuthorService>(() => new AuthorService(repositoryManager));
-        _bookService = new Lazy<IBookService>(() => new BookService(repositoryManager));
+        _authorService = new Lazy<IAuthorService>(() => new AuthorService(repositoryManager, mapper));
+        _bookService = new Lazy<IBookService>(() => new BookService(repositoryManager, mapper));
     }
     
     public IAuthorService AuthorService => _authorService.Value;
