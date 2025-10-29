@@ -1,4 +1,5 @@
 using LibraryManager.Contracts;
+using LibraryManager.Extensions;
 using LibraryManager.Presentation;
 using LibraryManager.Presentation.ActionFfilters;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ builder.Services.AddControllers()
 builder.Services.AddScoped<ValidationFilterAttribute>();
 
 var app = builder.Build();
+app.ConfigureExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
