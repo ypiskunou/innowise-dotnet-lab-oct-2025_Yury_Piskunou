@@ -17,7 +17,7 @@ builder.Services.AddDbContext<RepositoryContext>(
 );
 builder.Services.AddScoped<IRepositoryManager, RepositoryManager>();
 builder.Services.AddScoped<IServiceManager, ServiceManager>();
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 builder.Services.AddControllers()
     .AddApplicationPart(typeof(AssemblyReference).Assembly);
 builder.Services.AddScoped<ValidationFilterAttribute>();

@@ -37,9 +37,9 @@ public sealed class AuthorService : IAuthorService
         return _mapper.Map<IEnumerable<AuthorDto>>(authors);
     }
 
-    public async Task<IEnumerable<AuthorWithBookCountDto>> GetAllAuthorsWithBookCountsAsync(bool trackChanges)
+    public async Task<IEnumerable<AuthorWithBookCountDto>> GetAuthorsWithBookCountsAsync(bool trackChanges)
     {
-        var authorsQuery = _repository.Author.GetAllAuthorsWithBooksQueryable(false);
+        var authorsQuery = _repository.Author.GetAuthorsWithBooks(false);
 
         Expression<Func<Author, AuthorWithBookCountDto>> selector = author =>
             new AuthorWithBookCountDto(
@@ -55,7 +55,7 @@ public sealed class AuthorService : IAuthorService
 
     public async Task<AuthorDto> GetAuthorByIdAsync(Guid id, bool trackChanges)
     {
-        var author = await GetAuthorAndCheckIfItExists(id, trackChanges);
+        var author = await GetAuthorIfExistsAsync(id, trackChanges);
         var authorDto = _mapper.Map<AuthorDto>(author);
 
         return authorDto;
@@ -74,19 +74,19 @@ public sealed class AuthorService : IAuthorService
 
     public async Task UpdateAuthorAsync(Guid id, AuthorForUpdateDto author, bool trackChanges)
     {
-        var authorEntity = await GetAuthorAndCheckIfItExists(id, trackChanges);
+        var authorEntity = await GetAuthorIfExistsAsync(id, trackChanges);
         _mapper.Map(author, authorEntity);
         await _repository.SaveAsync();
     }
 
     public async Task DeleteAuthorAsync(Guid id, bool trackChanges)
     {
-        var author = await GetAuthorAndCheckIfItExists(id, trackChanges);
+        var author = await GetAuthorIfExistsAsync(id, trackChanges);
         _repository.Author.DeleteAuthor(author);
         await _repository.SaveAsync();
     }
 
-    private async Task<Author> GetAuthorAndCheckIfItExists(Guid id, bool trackChanges)
+    private async Task<Author> GetAuthorIfExistsAsync(Guid id, bool trackChanges)
     {
         var author = await _repository.Author.GetAuthorByIdAsync(id, trackChanges);
         if (author is null)

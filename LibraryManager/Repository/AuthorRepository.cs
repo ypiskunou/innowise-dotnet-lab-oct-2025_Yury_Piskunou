@@ -20,7 +20,7 @@ public class AuthorRepository : RepositoryBase<Author>, IAuthorRepository
             .OrderBy(a => a.Name)
             .ToListAsync();
 
-    public IQueryable<Author?> GetAllAuthorsWithBooksQueryable(bool trackChanges) => 
+    public IQueryable<Author?> GetAuthorsWithBooks(bool trackChanges) => 
         FindAll(trackChanges)
             .OrderBy(a => a.Name)
             .Include(a => a.Books);

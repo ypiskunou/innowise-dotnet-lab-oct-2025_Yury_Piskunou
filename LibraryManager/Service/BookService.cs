@@ -28,7 +28,7 @@ public sealed class BookService: IBookService
 
     public async Task<BookDto> GetBookByIdAsync(Guid id, bool trackChanges)
     {
-        var book = await GetBookAndCheckIfExistsAsync(id, trackChanges);
+        var book = await GetBookIfExistsAsync(id, trackChanges);
         
         return _mapper.Map<BookDto>(book);
     }
@@ -44,14 +44,14 @@ public sealed class BookService: IBookService
 
     public async Task UpdateBookAsync(Guid id, BookForUpdateDto book, bool trackChanges)
     {
-        var bookEntity = await GetBookAndCheckIfExistsAsync(id, trackChanges);
+        var bookEntity = await GetBookIfExistsAsync(id, trackChanges);
         _mapper.Map(book, bookEntity);
         await _repository.SaveAsync();
     }
 
     public async Task DeleteBookAsync(Guid id, bool trackChanges)
     {
-        var bookEntity = await GetBookAndCheckIfExistsAsync(id, trackChanges);
+        var bookEntity = await GetBookIfExistsAsync(id, trackChanges);
         _repository.Book.DeleteBook(bookEntity);
         await _repository.SaveAsync();
     }
@@ -65,7 +65,7 @@ public sealed class BookService: IBookService
     }
 
 
-    private async Task<Book> GetBookAndCheckIfExistsAsync(Guid id, bool trackChanges)
+    private async Task<Book> GetBookIfExistsAsync(Guid id, bool trackChanges)
     {
         var book = await _repository.Book.GetBookByIdAsync(id, trackChanges);
         if(book is null)

@@ -34,7 +34,7 @@ public class AuthorsController: ControllerBase
     public async Task<IActionResult> GetAuthorsWithBookCounts()
     {
         var authorsWithBookCounts = 
-            await _service.AuthorService.GetAllAuthorsWithBookCountsAsync(false);
+            await _service.AuthorService.GetAuthorsWithBookCountsAsync(false);
         
         return Ok(authorsWithBookCounts);
     }

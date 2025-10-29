@@ -11,5 +11,5 @@ public interface IAuthorService
     Task DeleteAuthorAsync(Guid id, bool trackChanges);
     
     Task<IEnumerable<AuthorDto>> SearchAuthorsByNameAsync(string name, bool trackChanges);
-    Task<IEnumerable<AuthorWithBookCountDto>> GetAllAuthorsWithBookCountsAsync(bool trackChanges);
+    Task<IEnumerable<AuthorWithBookCountDto>> GetAuthorsWithBookCountsAsync(bool trackChanges);
 }

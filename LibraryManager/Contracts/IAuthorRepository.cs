@@ -12,7 +12,7 @@ public interface IAuthorRepository
     
     Task<IEnumerable<Author?>> SearchAuthorsByNameAsync(string name, bool trackChanges);
     
-    IQueryable<Author?> GetAllAuthorsWithBooksQueryable(bool trackChanges);
+    IQueryable<Author?> GetAuthorsWithBooks(bool trackChanges);
     Task<IEnumerable<T>> GetAuthorsAsAsync<T>(IQueryable<Author?> authors, Expression<Func<Author, T>> selector);
     
 }
