@@ -28,5 +28,10 @@ public class AuthorConfiguration: IEntityTypeConfiguration<Author>
                 DateOfBirth = new DateTime(1948, 4, 28) 
             }
         );
+        
+        builder.HasMany(a => a.Books)
+            .WithOne(b => b.Author)
+            .HasForeignKey(b => b.AuthorId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

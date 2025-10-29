@@ -20,4 +20,9 @@ public class BookRepository: RepositoryBase<Book>, IBookRepository
     public void CreateBook(Book book) => Create(book);
 
     public void DeleteBook(Book book) => Delete(book);
+    
+    public async Task<IEnumerable<Book?>> GetBooksPublishedAfterAsync(int year, bool trackChanges) => 
+        await FindByCondition(b => b.PublishedYear >= year, trackChanges)
+            .OrderBy(b => b.PublishedYear)
+            .ToListAsync();
 }

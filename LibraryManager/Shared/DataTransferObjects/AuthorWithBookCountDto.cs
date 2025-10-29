@@ -1,3 +1,3 @@
 namespace Shared.DataTransferObjects;
 
-public record AuthorWithBookCount();
+public record AuthorWithBookCountDto(Guid Id, string Name, int? BookCount);

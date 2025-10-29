@@ -23,6 +23,22 @@ public class AuthorsController: ControllerBase
         return Ok(authors);
     }
 
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchAuthorsByName([FromQuery] string name)
+    {
+        var authors = await _service.AuthorService.SearchAuthorsByNameAsync(name, false);
+        return Ok(authors);
+    }
+
+    [HttpGet("with-book-counts")]
+    public async Task<IActionResult> GetAuthorsWithBookCounts()
+    {
+        var authorsWithBookCounts = 
+            await _service.AuthorService.GetAllAuthorsWithBookCountsAsync(false);
+        
+        return Ok(authorsWithBookCounts);
+    }
+
     [HttpGet("{id:guid}", Name = "GetAuthorById")]
     public async Task<IActionResult> GetAuthor(Guid id)
     {

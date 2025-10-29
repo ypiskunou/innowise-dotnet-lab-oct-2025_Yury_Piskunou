@@ -9,4 +9,6 @@ public interface IBookService
     Task<BookDto> AddBookAsync(BookForCreationDto book);
     Task UpdateBookAsync(Guid id, BookForUpdateDto book, bool trackChanges);
     Task DeleteBookAsync(Guid id, bool trackChanges);
+    
+    Task<IEnumerable<BookDto>> GetBooksPublishedAfterAsync(int year, bool trackChanges);
 }

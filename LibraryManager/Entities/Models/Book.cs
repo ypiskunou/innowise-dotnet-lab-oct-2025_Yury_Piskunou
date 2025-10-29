@@ -8,9 +8,6 @@ public class Book
     public Guid Id {get; set;}
     public string Title {get; set;}
     public int PublishedYear {get; set;}
-    
-    [ForeignKey(nameof(Author))]
     public Guid AuthorId {get; set;}
-    [Required]
     public Author Author {get; set;}
 }

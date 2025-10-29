@@ -9,4 +9,7 @@ public interface IAuthorService
     Task<AuthorDto> AddAuthorAsync(AuthorForCreationDto author);
     Task UpdateAuthorAsync(Guid id, AuthorForUpdateDto author, bool trackChanges);
     Task DeleteAuthorAsync(Guid id, bool trackChanges);
+    
+    Task<IEnumerable<AuthorDto>> SearchAuthorsByNameAsync(string name, bool trackChanges);
+    Task<IEnumerable<AuthorWithBookCountDto>> GetAllAuthorsWithBookCountsAsync(bool trackChanges);
 }

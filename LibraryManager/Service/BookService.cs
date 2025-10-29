@@ -56,6 +56,15 @@ public sealed class BookService: IBookService
         await _repository.SaveAsync();
     }
 
+    public async Task<IEnumerable<BookDto>> GetBooksPublishedAfterAsync(int year, bool trackChanges)
+    {
+        var books = await _repository.Book.GetBooksPublishedAfterAsync(year, trackChanges);
+        var booksDto = _mapper.Map<IEnumerable<BookDto>>(books);
+
+        return booksDto;
+    }
+
+
     private async Task<Book> GetBookAndCheckIfExistsAsync(Guid id, bool trackChanges)
     {
         var book = await _repository.Book.GetBookByIdAsync(id, trackChanges);

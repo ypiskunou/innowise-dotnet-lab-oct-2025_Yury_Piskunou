@@ -30,6 +30,13 @@ public class BooksController: ControllerBase
         return Ok(book);
     }
 
+    [HttpGet("published-after/{year:int}")]
+    public async Task<IActionResult> GetBooksPublishedAfter(int year)
+    {
+        var books = await _service.BookService.GetBooksPublishedAfterAsync(year, false);
+        return Ok(books);
+    }
+
     [HttpPost]
     [ServiceFilter(typeof(ValidationFilterAttribute))]
     public async Task<IActionResult> CreateBook([FromBody] BookForCreationDto book)

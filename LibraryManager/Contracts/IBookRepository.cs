@@ -8,4 +8,6 @@ public interface IBookRepository
     Task<Book?> GetBookByIdAsync(Guid id, bool trackChanges);
     void CreateBook(Book book);
     void DeleteBook(Book book);
+    
+    Task<IEnumerable<Book?>> GetBooksPublishedAfterAsync(int year, bool trackChanges);
 }
